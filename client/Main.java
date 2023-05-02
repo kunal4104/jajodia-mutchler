@@ -6,52 +6,8 @@ import java.util.*;
 
 public class Main {
 
-    // public static String clientNum;
-
-    private static boolean checkQuorum(int index, Node[] servTree) {
-        // System.out.println("idx "+index);
-        if (index*2 > servTree.length || index*2+1 > servTree.length)
-                return servTree[index - 1].grant;
-
-        if (servTree[index].grant){
-            return checkQuorum(index*2, servTree) || checkQuorum(index*2+1, servTree);
-
-        } else {
-            return checkQuorum(index*2, servTree) && checkQuorum(index*2+1, servTree);
-        }
-
-        // return servTree[index-1].grant;
-
-        // Random rand = new Random();
-        // int rand_int1 = rand.nextInt(1000);
-        // return (rand_int1 % 2 == 0);
-    }
-    private static int executeCriticalSec(StateObj clientState) {
-        try {
-
-            Calendar calendar = Calendar.getInstance();
-            long timeMilli = calendar.getTimeInMillis();
-            String timeStmp = String.valueOf(timeMilli);
-
-            System.out.println("Entering: "+clientState.clientNum+" timestamp:"+timeStmp + " exec num:"+clientState.criticalExecs);
-            Thread.sleep(5000);
-            System.out.println("Exiting Critical section!");
-        } catch (Exception e) {
-            System.out.println("Exception occured in client main: " + e);
-        }
-
-        return clientState.criticalExecs + 1;
-    }
 
     public static void main(String[] args) {
-
-        //for -> count critical
-            //threads for all servers for request-grant
-            //while (!quorum) 
-                //check quorum
-                //enter critical
-                //count critical ++
-            //threads for all servers for release 
 
         StateObj clientState = new StateObj(Integer.parseInt(args[0]));
         // try {
@@ -60,11 +16,6 @@ public class Main {
         //     System.out.println(e);
         // }
         try {
-
-            // ArrayList<Socket> socketList = new ArrayList<Socket>(); 
-            // for (int i = 0; i < clientState.servTree.length; i++) {
-            //     socketList.add(new Socket(clientState.servTree[i].ip, clientState.servTree[i].port)); 
-            // }
 
             while (clientState.criticalExecs < 20) {
 
@@ -81,6 +32,14 @@ public class Main {
                     servConn.get(i).start();
                 }
 
+                for (int i = 0; i < servConn.size(); i++) {
+                    try {
+                        servConn.get(i).join();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
                 // for (int i = 0; i < servConn.size(); i++) {
                 //     try {
                 //         servConn.get(i).join();
@@ -89,47 +48,47 @@ public class Main {
                 //     }
                 // }
 
-                boolean quorumAvail = false;
+                // boolean quorumAvail = false;
 
-                do {
-                    quorumAvail = checkQuorum(1, clientState.servTree);
+                // do {
+                //     quorumAvail = checkQuorum(1, clientState.servTree);
 
-                    if (quorumAvail) {
-                        if (!clientState.inCriticalSec) {
-                            clientState.inCriticalSec = true;
-                            clientState.criticalExecs = executeCriticalSec(clientState);
-                        }
+                //     if (quorumAvail) {
+                //         if (!clientState.inCriticalSec) {
+                //             clientState.inCriticalSec = true;
+                //             clientState.criticalExecs = executeCriticalSec(clientState);
+                //         }
 
-                    }
+                //     }
 
-                }while(!quorumAvail);
+                // }while(!quorumAvail);
 
 
 
-                ArrayList<SendMessageRelease> servConnRel = new ArrayList<SendMessageRelease>(); 
+                // ArrayList<SendMessageRelease> servConnRel = new ArrayList<SendMessageRelease>(); 
 
-                for (int i = 0; i < clientState.servTree.length; i++) {
-                    // servConnRel.add(new SendMessageRelease(socketList.get(i), clientState.servTree[i], clientState));
-                    servConnRel.add(new SendMessageRelease(clientState.servTree[i], clientState));
-                }
+                // for (int i = 0; i < clientState.servTree.length; i++) {
+                //     // servConnRel.add(new SendMessageRelease(socketList.get(i), clientState.servTree[i], clientState));
+                //     servConnRel.add(new SendMessageRelease(clientState.servTree[i], clientState));
+                // }
 
-                for (int i = 0; i < servConnRel.size(); i++) {
-                    servConnRel.get(i).start();
-                }
+                // for (int i = 0; i < servConnRel.size(); i++) {
+                //     servConnRel.get(i).start();
+                // }
 
-                for (int i = 0; i < servConnRel.size(); i++) {
-                    try {
-                        servConnRel.get(i).join();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
+                // for (int i = 0; i < servConnRel.size(); i++) {
+                //     try {
+                //         servConnRel.get(i).join();
+                //     } catch (InterruptedException e) {
+                //         e.printStackTrace();
+                //     }
+                // }
 
-                for (int i = 0; i < clientState.servTree.length; i++) {
-                    clientState.servTree[i].grant = false;
-                }
+                // for (int i = 0; i < clientState.servTree.length; i++) {
+                //     clientState.servTree[i].grant = false;
+                // }
 
-                clientState.inCriticalSec = false;
+                // clientState.inCriticalSec = false;
 
             }
         } catch (Exception e) {
@@ -140,60 +99,60 @@ public class Main {
     }
 }
 
-class SendMessageRelease extends Thread {
+// class SendMessageRelease extends Thread {
 
-    // private Socket socketObj;
-    private StateObj client;
-    private Node server;
+//     // private Socket socketObj;
+//     private StateObj client;
+//     private Node server;
 
 
-    // public SendMessageRelease(Socket socket, Node server, StateObj client) {
-    public SendMessageRelease(Node server, StateObj client) {
-        // this.socketObj = socket;
-        this.server = server;
-        this.client = client;
-    }
+//     // public SendMessageRelease(Socket socket, Node server, StateObj client) {
+//     public SendMessageRelease(Node server, StateObj client) {
+//         // this.socketObj = socket;
+//         this.server = server;
+//         this.client = client;
+//     }
 
-    private void startClient() {
+//     private void startClient() {
         
-        //reading the input from server
+//         //reading the input from server
 
 
-        try (Socket socket = new Socket(server.ip, server.port)) {
-        // try (Socket socket = socketObj) {
+//         try (Socket socket = new Socket(server.ip, server.port)) {
+//         // try (Socket socket = socketObj) {
             
-            BufferedReader input = new BufferedReader( new InputStreamReader(socket.getInputStream()));
-            PrintWriter output = new PrintWriter(socket.getOutputStream(),true);
+//             BufferedReader input = new BufferedReader( new InputStreamReader(socket.getInputStream()));
+//             PrintWriter output = new PrintWriter(socket.getOutputStream(),true);
 
-            Calendar calendar = Calendar.getInstance();
-            long timeMilli = calendar.getTimeInMillis();
-            String timeStmp = String.valueOf(timeMilli);
-            boolean reqSent = false;
+//             Calendar calendar = Calendar.getInstance();
+//             long timeMilli = calendar.getTimeInMillis();
+//             String timeStmp = String.valueOf(timeMilli);
+//             boolean reqSent = false;
 
-            String message = "RELEASE"+ " " + timeStmp + " " + client.clientNum;
+//             String message = "RELEASE"+ " " + timeStmp + " " + client.clientNum;
 
-            output.println(message);
-            Thread.sleep(1000);
+//             output.println(message);
+//             Thread.sleep(1000);
 
-            server.grant = false;
+//             server.grant = false;
 
-            // input.close();
-            // output.close();
-            // socket.close();
+//             // input.close();
+//             // output.close();
+//             // socket.close();
             
-        } catch (Exception e) {
-            System.out.println("Exception occured in client main: " + e);
-        }
-    }
+//         } catch (Exception e) {
+//             System.out.println("Exception occured in client main: " + e);
+//         }
+//     }
 
-    @Override
-    public void run() {
+//     @Override
+//     public void run() {
 
-        startClient();
-        super.run();
-    }
+//         startClient();
+//         super.run();
+//     }
 
-}
+// }
 
 class SendMessageRG extends Thread {
 
@@ -215,36 +174,37 @@ class SendMessageRG extends Thread {
         try (Socket socket = new Socket(server.ip, server.port)){
             BufferedReader input = new BufferedReader( new InputStreamReader(socket.getInputStream()));
             PrintWriter output = new PrintWriter(socket.getOutputStream(),true);
-            Random r = new Random();
-            int randWait= (r.nextInt(5) + 5)*1000;
-            System.out.println(randWait);
-            Thread.currentThread().sleep(randWait);
 
-            Calendar calendar = Calendar.getInstance();
-            long timeMilli = calendar.getTimeInMillis();
-            String timeStmp = String.valueOf(timeMilli);
-            boolean reqSent = false;
+            // Random r = new Random();
+            // int randWait= (r.nextInt(5) + 5)*1000;
+            // System.out.println(randWait);
+            // Thread.currentThread().sleep(randWait);
+
+            // Calendar calendar = Calendar.getInstance();
+            // long timeMilli = calendar.getTimeInMillis();
+            // String timeStmp = String.valueOf(timeMilli);
+            // boolean reqSent = false;
 
        
 
-            String message = "REQUEST" + " " + timeStmp + " " + client.clientNum;
+            String message = "hellow from client";
 
             String inputStr;
             
             do {
                 
-                if (!reqSent && !client.inCriticalSec && client.criticalExecs < 20) {
-                    output.println(message);
-                    reqSent = true;
-                }
+                // if (!reqSent && !client.inCriticalSec && client.criticalExecs < 20) {
+                output.println(message);
+                    // reqSent = true;
+                // }
                 inputStr = input.readLine();
-                if (!client.inCriticalSec)
-                    System.out.println(inputStr);
+                // if (!client.inCriticalSec)
+                System.out.println(inputStr);
 
-            } while (!inputStr.equals("GRANT") && !client.inCriticalSec && client.criticalExecs < 20);
+            } while (true);
 
-            if (!client.inCriticalSec)
-                server.grant = true;
+            // if (!client.inCriticalSec)
+            //     server.grant = true;
 
             // input.close();
             // output.close();
@@ -291,7 +251,7 @@ class StateObj {
     volatile static int criticalExecs; 
     // volatile static Node[] servTree = { new Node(1, "localhost", 8000), new Node(2, "localhost", 8001), new Node(3, "localhost", 8002), new Node(4, "localhost", 8003), new Node(5, "localhost", 8004), new Node(6, "localhost", 8005), new Node(7, "localhost", 8006)}; 
     // volatile static Node[] servTree = { new Node(1, "10.176.69.32", 8000), new Node(2, "10.176.69.33", 8000), new Node(3, "10.176.69.34", 8000), new Node(4, "10.176.69.35", 8000), new Node(5, "10.176.69.36", 8000), new Node(6, "10.176.69.37", 8000), new Node(7, "10.176.69.38", 8000)}; 
-    volatile static Node[] servTree = { new Node(1, "localhost", 8000), new Node(2, "localhost", 8001), new Node(3, "localhost", 8002)}; 
+    volatile static Node[] servTree = { new Node(1, "localhost", 8000)}; 
     // volatile static Node[] servTree = { new Node(1, "localhost", 8000)}; 
 
     public StateObj(int clientNum) {
