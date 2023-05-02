@@ -1,0 +1,10 @@
+follow below:
+
+cd server/
+javac Main.java ServerThread.java
+java Main 8000
+
+
+cd client/
+javac Main.java
+java Main 1
