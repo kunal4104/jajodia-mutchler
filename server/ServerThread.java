@@ -49,9 +49,50 @@ public class ServerThread extends Thread {
     //     return true;
     // }
 
-    // public boolean updateCurrentState(){
-    //    //TODO 
-    // }
+    public void updateCurrentState(StateObj serverState, PrintWriter output){
+        int currVotes = 0;
+        int replicaCount = serverState.RU;
+        int maxVersion = serverState.VN;
+        boolean hasDS = false;
+        String smalledDS = serverState.DS;
+        System.out.println("IN FUNC");
+        for (int i = 0; i < serverState.neighStateList.size(); i++) {
+            if (serverState.neighStateList.get(i).VN >= maxVersion) { 
+                maxVersion = serverState.neighStateList.get(i).VN;
+                replicaCount = serverState.neighStateList.get(i).RU;
+            }
+            if (serverState.neighStateList.get(i).DS == serverState.DS) {
+                hasDS = true;
+            }
+            if (serverState.neighStateList.get(i).DS.compareTo(serverState.DS) < 0){
+                smalledDS = serverState.neighStateList.get(i).DS;
+            }
+        }
+
+        for (int i = 0; i < serverState.neighStateList.size(); i++) {
+            if (serverState.neighStateList.get(i).VN == maxVersion) { 
+                currVotes += 1;
+            }
+        }
+        if (maxVersion == serverState.VN) {
+            currVotes += 1;
+        }
+
+        if (currVotes > replicaCount/2 ) {
+            serverState.VN += 1;
+            serverState.RU = serverState.neighStateList.size() + 1;
+            serverState.DS = smalledDS;
+            System.out.println("Updated VN to " + serverState.VN + " and RU to " + serverState.RU + " and DS to " + serverState.DS);
+        } else if (currVotes == replicaCount/2 && hasDS) {
+            serverState.VN += 1;
+            serverState.RU = serverState.neighStateList.size() + 1;
+            System.out.println("Updated VN to " + serverState.VN + " and RU to " + serverState.RU + " and DS to " + serverState.DS);
+        } else {
+            System.out.println("Can't update the document");
+        }
+        serverState.neighStateList.clear();
+        output.println("acknowledgement from "+ serverState.serverName);
+    }
 
     // public void sendCurrentState(Node server) {
 
@@ -108,6 +149,7 @@ public class ServerThread extends Thread {
 
             if (outputString.equals("WRITE")) {
                 System.out.println("Server neighbours " + getNeighbours());
+                System.out.println("VN " + serverState.VN + " and RU " + serverState.RU + " and DS " + serverState.DS);
                 serverState.numberMessageRec += 1;
                 String neigh = getNeighbours();
                 sendReqToNeigh(neigh);
@@ -118,7 +160,8 @@ public class ServerThread extends Thread {
                 System.out.println("received for all neighbours");
 
 
-                // updateCurrentState();
+                updateCurrentState(serverState, output);
+
                 // sendResClient();
 
                 if (serverState.numberMessageRec % 2 == 0) {

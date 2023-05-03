@@ -17,7 +17,7 @@ public class Main {
         // }
         try {
 
-            while (clientState.currentState < 5) {
+            while (clientState.currentState < 9) {
 
                 ArrayList<SendMessageWriteReq> servConn = new ArrayList<SendMessageWriteReq>(); 
 
@@ -39,7 +39,9 @@ public class Main {
                         e.printStackTrace();
                     }
                 }
+                clientState.currentState += 1;
 
+                System.out.println("current state: "+clientState.currentState);
                 // for (int i = 0; i < servConn.size(); i++) {
                 //     try {
                 //         servConn.get(i).join();
@@ -189,17 +191,18 @@ class SendMessageWriteReq extends Thread {
 
             String inputStr;
             
-            do {
+            // do {
                 
                 // if (!reqSent && !client.inCriticalSec && client.criticalExecs < 20) {
-                output.println(message);
+            output.println(message);
+
                     // reqSent = true;
                 // }
-                inputStr = input.readLine();
-                // if (!client.inCriticalSec)
-                System.out.println(inputStr);
+            inputStr = input.readLine();
+            //     // if (!client.inCriticalSec)
+            System.out.println(inputStr);
 
-            } while (true);
+            // } while (true);
 
             // if (!client.inCriticalSec)
             //     server.grant = true;
@@ -259,17 +262,17 @@ class SendMessageRG extends Thread {
 
             String inputStr;
             
-            do {
+            // do {
                 
                 // if (!reqSent && !client.inCriticalSec && client.criticalExecs < 20) {
-                output.println(message);
+            output.println(message);
                     // reqSent = true;
                 // }
-                inputStr = input.readLine();
+                // inputStr = input.readLine();
                 // if (!client.inCriticalSec)
-                System.out.println(inputStr);
+                // System.out.println(inputStr);
 
-            } while (true);
+            // } while (true);
 
             // if (!client.inCriticalSec)
             //     server.grant = true;
