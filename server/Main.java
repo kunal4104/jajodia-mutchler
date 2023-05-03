@@ -54,14 +54,14 @@ class StateObj {
         this.neighbours.put(3, "A BCD EFG H");
         this.neighbours.put(4, "A BCDEFG H");
 
-        this.servList.put("A", new Node("A", "localhost", 8000)); 
-        this.servList.put("B", new Node("B", "localhost", 8001)); 
-        this.servList.put("C", new Node("C", "localhost", 8002)); 
-        this.servList.put("D", new Node("D", "localhost", 8003));
-        this.servList.put("E", new Node("E", "localhost", 8004)); 
-        this.servList.put("F", new Node("F", "localhost", 8005)); 
-        this.servList.put("G", new Node("G", "localhost", 8006)); 
-        this.servList.put("H", new Node("H", "localhost", 8007));
+        this.servList.put("A", new Node("A", "10.176.69.32", 8000)); 
+        this.servList.put("B", new Node("B", "10.176.69.33", 8001)); 
+        this.servList.put("C", new Node("C", "10.176.69.34", 8002)); 
+        this.servList.put("D", new Node("D", "10.176.69.35", 8003));
+        this.servList.put("E", new Node("E", "10.176.69.36", 8004)); 
+        this.servList.put("F", new Node("F", "10.176.69.37", 8005)); 
+        this.servList.put("G", new Node("G", "10.176.69.38", 8006)); 
+        this.servList.put("H", new Node("H", "10.176.69.39", 8007));
 
     }
 }
