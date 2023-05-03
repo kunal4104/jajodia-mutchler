@@ -185,7 +185,7 @@ class SendMessageWriteReq extends Thread {
 
        
 
-            String message = "hellow from client";
+            String message = "WRITE";
 
             String inputStr;
             
