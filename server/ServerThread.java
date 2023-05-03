@@ -55,18 +55,20 @@ public class ServerThread extends Thread {
         int maxVersion = serverState.VN;
         boolean hasDS = false;
         String smalledDS = serverState.DS;
-        System.out.println("IN FUNC");
+        String neighbours = getNeighbours();
         for (int i = 0; i < serverState.neighStateList.size(); i++) {
             if (serverState.neighStateList.get(i).VN >= maxVersion) { 
                 maxVersion = serverState.neighStateList.get(i).VN;
                 replicaCount = serverState.neighStateList.get(i).RU;
             }
-            if (serverState.neighStateList.get(i).DS == serverState.DS) {
-                hasDS = true;
-            }
             if (serverState.neighStateList.get(i).DS.compareTo(serverState.DS) < 0){
                 smalledDS = serverState.neighStateList.get(i).DS;
             }
+        }
+        smalledDS =  Character.toString(neighbours.charAt(0));
+        
+        if (neighbours.indexOf(serverState.DS) >= 0 ) {
+            hasDS = true;
         }
 
         for (int i = 0; i < serverState.neighStateList.size(); i++) {
@@ -79,16 +81,16 @@ public class ServerThread extends Thread {
         }
 
         if (currVotes > replicaCount/2 ) {
-            serverState.VN += 1;
+            serverState.VN = maxVersion + 1;
             serverState.RU = serverState.neighStateList.size() + 1;
             serverState.DS = smalledDS;
             System.out.println("Updated VN to " + serverState.VN + " and RU to " + serverState.RU + " and DS to " + serverState.DS);
-        } else if (currVotes == replicaCount/2 && hasDS) {
+        } else if (currVotes == replicaCount/2 && hasDS) { 
             serverState.VN += 1;
             serverState.RU = serverState.neighStateList.size() + 1;
             System.out.println("Updated VN to " + serverState.VN + " and RU to " + serverState.RU + " and DS to " + serverState.DS);
         } else {
-            System.out.println("Can't update the document");
+            System.out.println("Can't update the document: Current VN is " + serverState.VN + " current RU is "+ serverState.RU + " and current DS is "+ serverState.DS );
         }
         serverState.neighStateList.clear();
         output.println("acknowledgement from "+ serverState.serverName);
@@ -145,7 +147,7 @@ public class ServerThread extends Thread {
             output = new PrintWriter(socket.getOutputStream(),true);
 
             String outputString = input.readLine();
-            System.out.println("Server received " + outputString);
+            // System.out.println("Server received " + outputString);
 
             if (outputString.equals("WRITE")) {
                 System.out.println("Server neighbours " + getNeighbours());
@@ -157,7 +159,7 @@ public class ServerThread extends Thread {
                     Thread.sleep(2000);
                 }
 
-                System.out.println("received for all neighbours");
+                // System.out.println("received for all neighbours");
 
 
                 updateCurrentState(serverState, output);
