@@ -49,9 +49,48 @@ public class ServerThread extends Thread {
     //     return true;
     // }
 
-    // public boolean updateCurrentState(){
-    //    //TODO 
-    // }
+    public void updateCurrentState(){
+        int currVotes = 0;
+        int replicaCount = serverState.RU;
+        int maxVersion = serverState.VN;
+        boolean hasDS = false;
+        String smalledDS = serverState.DS;
+
+        for (int i = 0; i < serverState.neighStateList.size(); i++) {
+            if (serverState.neighStateList.get(i).VN >= maxVersion) { 
+                maxVersion = serverState.neighStateList.get(i).VN;
+                replicaCount = serverState.neighStateList.get(i).RU;
+            }
+            if (serverState.neighStateList.get(i).DS == serverState.DS) {
+                hasDS = true;
+            }
+            if (serverState.neighStateList.get(i).DS.compareTo(serverState.DS) < 0){
+                smalledDS = serverState.neighStateList.get(i).DS;
+            }
+        }
+
+        for (int i = 0; i < serverState.neighStateList.size(); i++) {
+            if (serverState.neighStateList.get(i).VN == maxVersion) { 
+                currVotes += 1;
+            }
+        }
+        if (maxVersion == serverState.VN) {
+            currVotes += 1;
+        }
+
+        if (currVotes > replicaCount/2 ) {
+            serverState.VN += 1;
+            serverState.RU = serverState.neighStateList.size() + 1;
+            serverState.DS = smalledDS;
+            System.out.println("Updated VN to " + serverState.VN + "and RU to " + serverState.RU + "and DS to " + serverState.DS);
+        } else if (currVotes == replicaCount/2 && hasDS) {
+            serverState.VN += 1;
+            serverState.RU = serverState.neighStateList.size() + 1;
+            System.out.println("Updated VN to " + serverState.VN + "and RU to " + serverState.RU + "and DS to " + serverState.DS);
+        } else {
+            System.out.println("Can't update the document");
+        }
+    }
 
     // public void sendCurrentState(Node server) {
 
@@ -118,7 +157,7 @@ public class ServerThread extends Thread {
                 System.out.println("received for all neighbours");
 
 
-                // updateCurrentState();
+                updateCurrentState();
                 // sendResClient();
 
                 if (serverState.numberMessageRec % 2 == 0) {
