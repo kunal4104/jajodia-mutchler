@@ -38,28 +38,58 @@ public class ServerThread extends Thread {
     //     return isHead;
     // }
 
-    public boolean sendMessage(Socket socket, Message message) {
-        try {
-            PrintWriter outputGrant = new PrintWriter(socket.getOutputStream(),true);
-            outputGrant.println(message);
-            // outputGrant.close();
-        } catch (Exception e) {
-            System.out.println("Error occured send grant: " +e);
+    // public boolean sendMessage(Socket socket) {
+    //     try {
+    //         PrintWriter outputGrant = new PrintWriter(socket.getOutputStream(),true);
+    //         outputGrant.println("hellow from server");
+    //         // outputGrant.close();
+    //     } catch (Exception e) {
+    //         System.out.println("Error occured send grant: " +e);
+    //     }
+    //     return true;
+    // }
+
+    // public boolean updateCurrentState(){
+    //    //TODO 
+    // }
+
+    // public void sendCurrentState(Node server) {
+
+    // }
+
+    public void sendReqToNeigh(String neighbours) {
+        String[] neighbourChars = neighbours.split("");
+        ArrayList<SendMessage> servConn = new ArrayList<SendMessage>(); 
+
+        for (int i = 0; i < neighbourChars.length; i++) {
+            if (!neighbourChars[i].equals(serverState.serverName)) {
+                servConn.add(new SendMessage(serverState.servList.get(neighbourChars[i]), serverState));
+            }
+        } 
+
+        for (int i = 0; i < servConn.size(); i++) {
+            servConn.get(i).start();
         }
-        return true;
-    }
 
-    public boolean updateCurrentState(){
-       //TODO 
-    }
-
-    public void sendReqToNeigh() {
-        //TODO
-
+        for (int i = 0; i < servConn.size(); i++) {
+            try {
+                servConn.get(i).join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public String getNeighbours(){
-        //TODO
+        String servers = serverState.neighbours.get(serverState.currentState);
+        String[] serverList = servers.split("\\s+");
+
+        for (int i = 0; i < serverList.length; i++) {
+            if (serverList[i].contains(serverState.serverName))
+                return serverList[i];
+        }
+
+        return "";
     } 
 
 
@@ -76,20 +106,28 @@ public class ServerThread extends Thread {
             String outputString = input.readLine();
             System.out.println("Server received " + outputString);
 
-            if (outputString == "WRITE") {
+            if (outputString.equals("WRITE")) {
+                System.out.println("Server neighbours " + getNeighbours());
                 serverState.numberMessageRec += 1;
-                String neigh = getNeighbours()
+                String neigh = getNeighbours();
                 sendReqToNeigh(neigh);
-                while (len(neigh) != len(neighObjlist)) {
+                while (neigh.length() != serverState.neighStateList.size() + 1) {
+                    Thread.sleep(2000);
                 }
-                updateCurrentState();
-                sendResClient();
+
+                System.out.println("received for all neighbours");
+
+
+                // updateCurrentState();
+                // sendResClient();
 
                 if (serverState.numberMessageRec % 2 == 0) {
                     serverState.currentState += 1;
                 }
             } else {
 
+               String[] opt = outputString.split("\\s+");
+                serverState.neighStateList.add(new NeighObj(Integer.parseInt(opt[0]), Integer.parseInt(opt[1]), opt[2]));
             }
 
             //if write request from client 
@@ -102,7 +140,7 @@ public class ServerThread extends Thread {
             
 
 
-            sendMessage(socket);
+            // sendMessage(socket);
 
         }
         catch (Exception e) {
@@ -121,4 +159,42 @@ class Message{
         this.clientNum = clientNum;
         this.socket = socket;
     }
+}
+
+
+class SendMessage extends Thread {
+
+    private Node server;
+    private StateObj serverState;
+
+
+    public SendMessage(Node server, StateObj ServerState) {
+        this.server = server;
+        this.serverState = ServerState;
+    }
+
+    private void startClient() {
+        
+        try (Socket socket = new Socket(server.ip, server.port)){
+            // BufferedReader input = new BufferedReader( new InputStreamReader(socket.getInputStream()));
+            PrintWriter output = new PrintWriter(socket.getOutputStream(),true);
+
+            String message = Integer.toString(serverState.VN)+" "+Integer.toString(serverState.RU)+" "+serverState.DS;
+
+            output.println(message);
+
+
+        } catch (Exception e) {
+            System.out.println("Exception occured in client main: " + e);
+        } 
+
+    }
+
+    @Override
+    public void run() {
+
+        startClient();
+        super.run();
+    }
+
 }
