@@ -72,7 +72,7 @@ class NeighObj{
     public int VN;
     public String DS;
 
-    NeighObj(int RU, int VN, String DS) {
+    NeighObj(int VN, int RU, String DS) {
         this.RU = RU;
         this.VN = VN;
         this.DS = DS;
