@@ -315,7 +315,7 @@ class Node {
 
 class StateObj {
 
-    static Node[] servList = { new Node("A", "localhost", 8000), new Node("B", "localhost", 8001), new Node("C", "localhost", 8002), new Node("D", "localhost", 8003), new Node("E", "localhost", 8004), new Node("F", "localhost", 8005), new Node("G", "localhost", 8006), new Node("H", "localhost", 8007)}; 
+    static Node[] servList = { new Node("A", "10.176.69.32", 8000), new Node("B", "10.176.69.33", 8001), new Node("C", "10.176.69.34", 8002), new Node("D", "10.176.69.35", 8003), new Node("E", "10.176.69.36", 8004), new Node("F", "10.176.69.37", 8005), new Node("G", "10.176.69.38", 8006), new Node("H", "10.176.69.39", 8007)}; 
     int currentState;
     // volatile static Node[] servTree = { new Node(1, "10.176.69.32", 8000), new Node(2, "10.176.69.33", 8000), new Node(3, "10.176.69.34", 8000), new Node(4, "10.176.69.35", 8000), new Node(5, "10.176.69.36", 8000), new Node(6, "10.176.69.37", 8000), new Node(7, "10.176.69.38", 8000)}; 
     // volatile static Node[] servTree = { new Node("A", "localhost", 8000), new Node("B", "localhost", 8001), new Node("C", "localhost", 8002), new Node("A", "localhost", 8000)}; 
