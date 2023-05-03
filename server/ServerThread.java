@@ -49,7 +49,7 @@ public class ServerThread extends Thread {
     //     return true;
     // }
 
-    public void updateCurrentState(){
+    public void updateCurrentState(StateObj serverState, PrintWriter output){
         int currVotes = 0;
         int replicaCount = serverState.RU;
         int maxVersion = serverState.VN;
@@ -90,6 +90,8 @@ public class ServerThread extends Thread {
         } else {
             System.out.println("Can't update the document");
         }
+        serverState.neighStateList.clear();
+        output.println("acknowledgement from "+ serverState.serverName);
     }
 
     // public void sendCurrentState(Node server) {
@@ -147,6 +149,7 @@ public class ServerThread extends Thread {
 
             if (outputString.equals("WRITE")) {
                 System.out.println("Server neighbours " + getNeighbours());
+                System.out.println("VN " + serverState.VN + " and RU " + serverState.RU + " and DS " + serverState.DS);
                 serverState.numberMessageRec += 1;
                 String neigh = getNeighbours();
                 sendReqToNeigh(neigh);
@@ -157,7 +160,8 @@ public class ServerThread extends Thread {
                 System.out.println("received for all neighbours");
 
 
-                updateCurrentState();
+                updateCurrentState(serverState, output);
+
                 // sendResClient();
 
                 if (serverState.numberMessageRec % 2 == 0) {
