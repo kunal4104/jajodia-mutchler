@@ -14,9 +14,8 @@ public class ServerThread extends Thread {
     private StateObj serverState;    
 
 
-    public ServerThread(Socket socket, ArrayList<ServerThread> threads, StateObj ServerState) {
+    public ServerThread(Socket socket, StateObj ServerState) {
         this.socket = socket;
-        this.threadList = threads;
         this.serverState = ServerState;
     }
 
@@ -39,16 +38,31 @@ public class ServerThread extends Thread {
     //     return isHead;
     // }
 
-    public boolean sendMessage(Socket socket) {
+    public boolean sendMessage(Socket socket, Message message) {
         try {
             PrintWriter outputGrant = new PrintWriter(socket.getOutputStream(),true);
-            outputGrant.println("hellow from server");
+            outputGrant.println(message);
             // outputGrant.close();
         } catch (Exception e) {
             System.out.println("Error occured send grant: " +e);
         }
         return true;
     }
+
+    public boolean updateCurrentState(){
+       //TODO 
+    }
+
+    public void sendReqToNeigh() {
+        //TODO
+
+    }
+
+    public String getNeighbours(){
+        //TODO
+    } 
+
+
 
     @Override
     public void run() {
@@ -60,57 +74,36 @@ public class ServerThread extends Thread {
             output = new PrintWriter(socket.getOutputStream(),true);
 
             String outputString = input.readLine();
-
-            // String[] outputArr = outputString.split(" ");
-
-            // printToALlClients(outputString);
-            // output.println("client sends " + outputString);
-            // output.println("Server says " + outputString);
             System.out.println("Server received " + outputString);
+
+            if (outputString == "WRITE") {
+                serverState.numberMessageRec += 1;
+                String neigh = getNeighbours()
+                sendReqToNeigh(neigh);
+                while (len(neigh) != len(neighObjlist)) {
+                }
+                updateCurrentState();
+                sendResClient();
+
+                if (serverState.numberMessageRec % 2 == 0) {
+                    serverState.currentState += 1;
+                }
+            } else {
+
+            }
+
+            //if write request from client 
+                //send current server ru, vn and ds to all the neighbours
+                    //while message received from neighbour != number neighbour wait
+                        //update my current state 
+                            //is write possible
+            //else
+                //append ru, vn and ds to neighobjlist
+            
+
 
             sendMessage(socket);
 
-            // if (outputArr[0].equals("RELEASE")) {
-            //     //remove client from pq
-            //     //if client at top of the pq
-            //     //send GRANT to next client
-            //     System.out.println("got release from "+ outputArr[2]);
-
-            //     boolean isTop = removeItem(Integer.parseInt(outputArr[2]));
-
-            //     if (isTop) {
-            //         serverState.topClient = serverState.pQueue.poll();
-            //         System.out.println("server was locked by "+outputArr[2]);
-            //         if (serverState.topClient != null) {
-            //             System.out.println("sending grant to "+serverState.topClient.clientNum);
-            //             sendGrant(serverState.topClient.socket);
-            //         } else {
-            //             serverState.isLocked = false;
-            //             System.out.println("server is unlocked!");
-            //         }
-            //     } 
-            // }
-            // else {
-            //     if (serverState.isLocked) {
-            //         //add to pq
-            //         System.out.println("server is locked by" + serverState.topClient.clientNum+" adding request to queue!");
-            //         serverState.pQueue.add(new QueueObject(Long.parseLong(outputArr[1]), Integer.parseInt(outputArr[2]), socket));
-            //         System.out.println("queue size " + serverState.pQueue.size());
-            //     } else {
-            //         //add to pq
-            //         //locked is true
-            //         //send GRANT to the client 
-            //         System.out.println("server was not locked, empty queue size " + serverState.pQueue.size());
-            //         serverState.pQueue.add(new QueueObject(Long.parseLong(outputArr[1]), Integer.parseInt(outputArr[2]), socket));
-            //         serverState.isLocked = true;
-            //         System.out.println("locking server for client "+ outputArr[2] + ", queue size " + serverState.pQueue.size());
-            //         serverState.topClient = serverState.pQueue.poll();
-            //         System.out.println("set head "+ serverState.topClient.clientNum);
-            //         sendGrant(serverState.topClient.socket);
-            //     }
-            // }
-
-                // }
         }
         catch (Exception e) {
             System.out.println("Error occured run: " +e);
@@ -119,13 +112,13 @@ public class ServerThread extends Thread {
 }
 // }
 
-// class QueueObject {
-//     public long timeStamp;
-//     public int clientNum;
-//     public Socket socket;
-//     public QueueObject (long timestamp, int clientNum, Socket socket) {
-//         this.timeStamp = timeStamp;
-//         this.clientNum = clientNum;
-//         this.socket = socket;
-//     }
-// }
+class Message{
+    public long timeStamp;
+    public int clientNum;
+    public Socket socket;
+    public Message(String type) {
+        this.timeStamp = timeStamp;
+        this.clientNum = clientNum;
+        this.socket = socket;
+    }
+}
