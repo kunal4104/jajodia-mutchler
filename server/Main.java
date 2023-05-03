@@ -7,11 +7,11 @@ public class Main {
     public static void main(String[] args) {
 
 
-
+        StateObj serverState = new StateObj(args[1]);
         try (ServerSocket serversocket = new ServerSocket(Integer.parseInt(args[0]))){
             while(true) {
                 Socket socket = serversocket.accept();
-                ServerThread serverThread = new ServerThread(socket, new StateObj(args[1]));
+                ServerThread serverThread = new ServerThread(socket, serverState);
                 //starting the thread
                 // threadList.add(serverThread); 
                 serverThread.start();
