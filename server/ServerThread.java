@@ -55,7 +55,7 @@ public class ServerThread extends Thread {
         int maxVersion = serverState.VN;
         boolean hasDS = false;
         String smalledDS = serverState.DS;
-
+        System.out.println("IN FUNC");
         for (int i = 0; i < serverState.neighStateList.size(); i++) {
             if (serverState.neighStateList.get(i).VN >= maxVersion) { 
                 maxVersion = serverState.neighStateList.get(i).VN;
@@ -82,11 +82,11 @@ public class ServerThread extends Thread {
             serverState.VN += 1;
             serverState.RU = serverState.neighStateList.size() + 1;
             serverState.DS = smalledDS;
-            System.out.println("Updated VN to " + serverState.VN + "and RU to " + serverState.RU + "and DS to " + serverState.DS);
+            System.out.println("Updated VN to " + serverState.VN + " and RU to " + serverState.RU + " and DS to " + serverState.DS);
         } else if (currVotes == replicaCount/2 && hasDS) {
             serverState.VN += 1;
             serverState.RU = serverState.neighStateList.size() + 1;
-            System.out.println("Updated VN to " + serverState.VN + "and RU to " + serverState.RU + "and DS to " + serverState.DS);
+            System.out.println("Updated VN to " + serverState.VN + " and RU to " + serverState.RU + " and DS to " + serverState.DS);
         } else {
             System.out.println("Can't update the document");
         }
