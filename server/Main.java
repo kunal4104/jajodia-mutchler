@@ -33,9 +33,9 @@ class StateObj {
     volatile static int VN;
     volatile static int RU;
     volatile static String DS;
-    volatile static NeighObj[] neighStateList;
+    volatile static ArrayList<NeighObj> neighStateList = new ArrayList<NeighObj>();;
 
-    static Node[] servList = { new Node("A", "localhost", 8000), new Node("B", "localhost", 8001), new Node("C", "localhost", 8002), new Node("D", "localhost", 8003), new Node("E", "localhost", 8004), new Node("F", "localhost", 8005), new Node("G", "localhost", 8006), new Node("H", "localhost", 8007)}; 
+    static HashMap<String, Node> servList = new HashMap<>();  
 
     
     HashMap<Integer, String> neighbours= new HashMap<>();
@@ -45,22 +45,34 @@ class StateObj {
         this.currentState = 1;
         this.numberMessageRec= 0;
         this.serverName = serverName;
+        this.VN = 1;
+        this.RU = 8;
+        this.DS = "A";
+
         this.neighbours.put(1, "ABCDEFGH");
         this.neighbours.put(2, "ABCD EFGH");
         this.neighbours.put(3, "A BCD EFG H");
         this.neighbours.put(4, "A BCDEFG H");
+
+        this.servList.put("A", new Node("A", "localhost", 8000)); 
+        this.servList.put("B", new Node("B", "localhost", 8001)); 
+        this.servList.put("C", new Node("C", "localhost", 8002)); 
+        this.servList.put("D", new Node("D", "localhost", 8003));
+        this.servList.put("E", new Node("E", "localhost", 8004)); 
+        this.servList.put("F", new Node("F", "localhost", 8005)); 
+        this.servList.put("G", new Node("G", "localhost", 8006)); 
+        this.servList.put("H", new Node("H", "localhost", 8007));
+
     }
 }
 
 class NeighObj{
 
-    public String serverName;
     public int RU;
     public int VN;
     public String DS;
 
-    NeighObj(String serverName, int RU, int VN, String DS) {
-        this.serverName = serverName;
+    NeighObj(int RU, int VN, String DS) {
         this.RU = RU;
         this.VN = VN;
         this.DS = DS;
@@ -81,8 +93,5 @@ class Node {
         this. port = port;
     }
 
-    // public void updateGrant(boolean newGrant) {
-    //     grant = newGrant;
-    // }
 }
 
