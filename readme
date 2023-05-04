@@ -2,9 +2,9 @@ follow below:
 
 cd server/
 javac Main.java ServerThread.java
-java Main 8000
+java Main <server name> 
 
 
 cd client/
 javac Main.java
-java Main 1
+java Main
